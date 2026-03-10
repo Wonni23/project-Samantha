@@ -1,0 +1,138 @@
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Environment Variables
+!.env.example
+.env
+.env.local
+
+# Docker
+postgres_data/
+
+# IDE
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Temporary files
+...
+
+# Backend specific
+# Mock 서비스 (임시 개발용)
+*_mock.py
+test_mock_*.py
+
+# 테스트 파일 (로컬 전용)
+backend/test_*.py
+backend/debug_*.py
+SHARED_ISSUES.md
+SOCKET_CRITICAL_FIXES.md
+
+# 실험 결과 데이터
+backend/app/engine/test/*.json
+
+# 벤치마크 결과
+tools/bench_results/
+
+# Plan 모드 작업 디렉토리
+.sisyphus/
+
+# Git worktrees
+.worktrees/
+
+# 출력 파일
+backend/output_audio/
+*.mp3
+*.wav
+
+backend/docs/engine/
+
+
+# Gemini CLI
+.gemini/
+
+# Unignore frontend source
+!frontend/lib/
+
+# SSL Certificates
+*.pem
+*.key
+backend/certs/*
+!backend/certs/generate_certs.sh
+
+# Claude Code 설정
+.claude/
+**/AGENTS.md
+CLAUDE.md
+
+# 레거시 테스트 (2-LLM 아키텍처 전용, 로컬 보관)
+backend/app/engine/tests/unit/test_mini_analyst.py
+backend/app/engine/tests/unit/test_pipeline_mini.py
+backend/app/engine/tests/unit/test_two_phase_actor.py
+
+# Ad-hoc 실험 테스트 (단위 테스트 아님)
+backend/app/engine/test/test_*.py
+backend/app/engine/test/archive/
+backend/app/engine/test/QUALITY_AB_REPORT_*.md
+
+# 임시 벤치마크 (tools/가 공식)
+backend/bench_*.py
+
+# 로컬 문서 (plans/는 체크인)
+/docs/*
+!/docs/plans/
+backend/docs/ISSUE_DRAFT.md

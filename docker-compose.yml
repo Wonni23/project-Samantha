@@ -1,0 +1,112 @@
+services:
+  # 1. 프론트엔드 (Flutter Web + Nginx)
+  frontend:
+    build: ./frontend
+    container_name: samantha_frontend
+    ports:
+      - "8080:80"   # HTTP (HTTPS로 리다이렉트)
+      - "8443:443"  # HTTPS
+    volumes:
+      - ./frontend/localhost.pem:/etc/nginx/certs/localhost.pem:ro
+      - ./frontend/localhost-key.pem:/etc/nginx/certs/localhost-key.pem:ro
+    depends_on:
+      - backend
+    networks:
+      - samantha-network
+    restart: unless-stopped
+
+  # 2. 백엔드 (FastAPI - AI Engine)
+  backend:
+    build: ./backend
+    container_name: samantha_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/certs:/app/certs
+    env_file:
+      - ./backend/.env
+    environment:
+      # Docker 네트워크에서는 서비스명으로 접근 (backend/.env의 localhost 값을 덮어씀)
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-samantha_user}:${POSTGRES_PASSWORD:-samantha_password}@postgres:5432/${POSTGRES_DB:-samantha_db}
+      - S3_ENDPOINT_URL=http://minio:9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - samantha-network
+    restart: unless-stopped
+
+  # 3. PostgreSQL with pgvector extension (RAG 필수)
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: samantha_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-samantha_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-samantha_password}
+      POSTGRES_DB: ${POSTGRES_DB:-samantha_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-samantha_user} -d ${POSTGRES_DB:-samantha_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - samantha-network
+    restart: unless-stopped
+
+  # 4. 객체 스토리지 (MinIO)
+  minio:
+    image: minio/minio
+    container_name: samantha-minio
+    restart: always
+    command: server /data --console-address ":9001"
+    ports:
+      - "9005:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio_data:/data
+    networks:
+      - samantha-network
+
+  # 5. 자동 버킷 생성 설정 (MinIO Client)
+  minio-init:
+    image: minio/mc
+    container_name: samantha-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      count=0;
+      until (/usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin) || [ $$count -eq 30 ]; do
+        echo 'Waiting for MinIO (attempt $$count)...';
+        sleep 1;
+        count=$$((count + 1));
+      done;
+      if [ $$count -eq 30 ]; then
+        echo '❌ MinIO connection timed out';
+        exit 1;
+      fi;
+      /usr/bin/mc mb myminio/samantha-bucket || true;
+      "
+    networks:
+      - samantha-network
+
+volumes:
+  postgres_data:
+    name: samantha_postgres_data
+  minio_data:
+
+networks:
+  samantha-network:
+    driver: bridge

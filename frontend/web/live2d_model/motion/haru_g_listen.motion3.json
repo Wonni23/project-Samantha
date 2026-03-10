@@ -1,0 +1,106 @@
+{
+	"Version": 3,
+	"Meta": {
+		"Duration": 4.53,
+		"Fps": 30.0,
+		"Loop": true,
+		"AreBeziersRestricted": true,
+		"CurveCount": 18,
+		"TotalSegmentCount": 18,
+		"TotalPointCount": 36,
+		"UserDataCount": 0,
+		"TotalUserDataSize": 0
+	},
+	"Curves": [
+		{
+			"Target": "Parameter",
+			"Id": "ParamAngleX",
+			"Segments": [0, 30, 0, 4.53, 30]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamAngleY",
+			"Segments": [0, -30, 0, 4.53, -30]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamAngleZ",
+			"Segments": [0, -10, 0, 4.53, -10]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamBodyAngleY",
+			"Segments": [0, 30, 0, 4.53, 30]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamBodyUpper",
+			"Segments": [0, 30, 0, 4.53, 30]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamEyeLOpen",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamEyeROpen",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamArmLA",
+			"Segments": [0, -1.0, 0, 4.53, -1.0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamArmRA",
+			"Segments": [0, -1.0, 0, 4.53, -1.0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamArmLB",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamArmRB",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamHandChangeR",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "Parameter",
+			"Id": "ParamHandDhangeL",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "PartOpacity",
+			"Id": "Part01ArmRA001",
+			"Segments": [0, 1, 0, 4.53, 1]
+		},
+		{
+			"Target": "PartOpacity",
+			"Id": "Part01ArmLA001",
+			"Segments": [0, 1, 0, 4.53, 1]
+		},
+		{
+			"Target": "PartOpacity",
+			"Id": "Part01ArmRB001",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "PartOpacity",
+			"Id": "Part01ArmLB001",
+			"Segments": [0, 0, 0, 4.53, 0]
+		},
+		{
+			"Target": "PartOpacity",
+			"Id": "Part01Body001",
+			"Segments": [0, 1, 0, 4.53, 1]
+		}
+	]
+}
