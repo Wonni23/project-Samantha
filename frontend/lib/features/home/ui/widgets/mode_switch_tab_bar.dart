@@ -24,24 +24,40 @@ class ModeSwitchTabBar extends ConsumerWidget {
                 width: MediaQuery.of(context).size.width * 0.5,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[300]?.withAlpha(128),
+                    color: const Color(0xFFE5E0D5), // 배경보다 살짝 어두운 톤으로 입체감 부여
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   child: TabBar(
                     controller: tabController,
                     dividerColor: Colors.transparent, // 하단 흰색 줄 제거
                     labelColor: Colors.white,
-                    unselectedLabelColor: Colors.black,
+                    unselectedLabelColor: const Color(0xFF8D8171), // 뮤트 브라운
                     indicatorSize: TabBarIndicatorSize.tab,
                     indicator: BoxDecoration(
-                      color: Colors.black,
+                      color: const Color(0xFF333333), // 소프트 차콜
                       borderRadius: BorderRadius.circular(30.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(20),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     splashBorderRadius: BorderRadius.circular(30.0),
-                    indicatorColor: Colors.blue,
                     tabs: const [
-                      Tab(text: '채팅 모드'),
-                      Tab(text: '보이스 모드'),
+                      Tab(
+                        child: Text(
+                          '채팅 모드',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      Tab(
+                        child: Text(
+                          '보이스 모드',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     ],
                   ),
                 ),

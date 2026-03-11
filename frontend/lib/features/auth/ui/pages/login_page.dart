@@ -168,7 +168,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ElevatedButton(
                           onPressed: isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _isSignUpMode ? Colors.deepPurple : null,
+                            backgroundColor: _isSignUpMode ? Theme.of(context).colorScheme.primary : null,
                             foregroundColor: _isSignUpMode ? Colors.white : null,
                             minimumSize: const Size(double.infinity, 56),
                             shape: RoundedRectangleBorder(
@@ -193,7 +193,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           child: Text(
                             _isSignUpMode ? '이미 계정이 있으신가요? 로그인' : '처음이신가요? 이메일로 가입하기',
                             style: TextStyle(
-                              color: _isSignUpMode ? Colors.grey : Colors.deepPurple,
+                              color: _isSignUpMode ? Colors.grey : Theme.of(context).colorScheme.primary,
                               fontWeight: _isSignUpMode ? null : FontWeight.bold,
                             ),
                           ),
@@ -219,10 +219,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               _confirmPasswordController.clear();
                             });
                           },
-                          child: const Text(
+                          child: Text(
                             '처음이신가요? 이메일로 가입하기',
                             style: TextStyle(
-                              color: Colors.deepPurple,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

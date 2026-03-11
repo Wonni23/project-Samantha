@@ -103,14 +103,14 @@ class _OnboardingTermsPageState extends ConsumerState<OnboardingTermsPage> {
           leading: Checkbox(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.deepPurple,
+            activeColor: theme.colorScheme.primary,
           ),
           title: Row(
             children: [
               Text(
                 isRequired ? '[필수] ' : '[선택] ',
                 style: TextStyle(
-                  color: isRequired ? Colors.deepPurple : Colors.grey.shade600,
+                  color: isRequired ? theme.colorScheme.primary : Colors.grey.shade600,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -173,14 +173,14 @@ class _OnboardingTermsPageState extends ConsumerState<OnboardingTermsPage> {
                     // ★ 추가된 기능: 전체 동의 체크박스
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withValues(alpha: 0.08), // 변경됨
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), // 변경됨
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.deepPurple.withValues(alpha: 0.3)), // 변경됨
+                        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)), // 변경됨
                       ),
                       child: CheckboxListTile(
                         value: _isAllChecked,
                         onChanged: _toggleAll,
-                        activeColor: Colors.deepPurple,
+                        activeColor: Theme.of(context).colorScheme.primary,
                         title: const Text(
                           '약관 전체 동의하기',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -262,7 +262,7 @@ class _OnboardingTermsPageState extends ConsumerState<OnboardingTermsPage> {
                 child: ElevatedButton(
                   onPressed: _isAllRequiredChecked ? _submitOnboarding : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple, // 활성화 색상
+                    backgroundColor: Theme.of(context).colorScheme.primary, // 활성화 색상
                     foregroundColor: Colors.white, // 글자 색상
                     disabledBackgroundColor: Colors.grey.shade300, // 비활성화 배경
                     disabledForegroundColor: Colors.grey.shade500, // 비활성화 글자

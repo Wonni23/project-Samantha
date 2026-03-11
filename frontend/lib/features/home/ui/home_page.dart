@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:frontend/common/widgets/default_layout.dart';
 import 'package:frontend/core/network/socket_service.dart';
+import 'package:frontend/core/router/router_paths.dart';
 import 'package:frontend/features/auth/providers/user_provider.dart';
 import 'package:frontend/features/chat/ui/chat_screen.dart';
 import 'package:frontend/features/home/providers/ai_response_provider.dart';
 import 'package:frontend/features/home/providers/audio_recorder_provider.dart';
 import 'package:frontend/features/home/ui/widgets/info_widgets.dart';
-import 'package:frontend/features/home/ui/widgets/live2d_motion_buttons.dart';
 import 'package:frontend/features/home/ui/widgets/mode_switch_tab_bar.dart';
 import 'package:frontend/features/home/ui/widgets/voice_mode_controls.dart';
 import 'package:frontend/features/live2d/live2d_widget.dart';
@@ -217,7 +218,7 @@ class _HomePageState extends ConsumerState<HomePage>
                           Icon(
                             Icons.psychology, 
                             size: 16, 
-                            color: hasEvent ? Colors.purpleAccent : Colors.grey,
+                            color: hasEvent ? Theme.of(context).colorScheme.secondary : Colors.grey,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -243,8 +244,6 @@ class _HomePageState extends ConsumerState<HomePage>
                 right: 0,
                 child: ModeSwitchTabBar(tabController: _voiceChatTabController),
               ),
-
-              Live2DMotionButtons(live2dKey: _live2dKey),
 
               if (_voiceChatTabController.index == 0)
                 const Positioned(
@@ -324,6 +323,22 @@ class _HomePageState extends ConsumerState<HomePage>
                     icon: Icons.location_on,
                     label: '지역',
                     value: user.addressDistrict ?? '미설정',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              InfoCard(
+                title: '서비스 정보',
+                children: [
+                  ActionTile(
+                    icon: Icons.description_outlined,
+                    label: '서비스 이용약관',
+                    onTap: () => context.push(AppRoutePaths.termsOfService),
+                  ),
+                  ActionTile(
+                    icon: Icons.privacy_tip_outlined,
+                    label: '개인정보 처리방침',
+                    onTap: () => context.push(AppRoutePaths.privacyPolicy),
                   ),
                 ],
               ),

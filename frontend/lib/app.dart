@@ -215,8 +215,27 @@ class _MyAppState extends ConsumerState<MyApp> {
       routerConfig: router,
       title: 'project Samantha',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6D4C41), // 딥 브론즈 (Seed)
+          surface: const Color(0xFFEFEBE0),   // 코지 오트밀 (Base Background)
+          onSurface: const Color(0xFF3E2723), // 차콜 브라운 (Text)
+          primary: const Color(0xFF6D4C41),
+          secondary: const Color(0xFF8E9775), // 세이지 그린 (Accent)
+        ),
+        scaffoldBackgroundColor: const Color(0xFFEFEBE0),
         fontFamily: 'Noto Sans KR',
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Color(0xFF3E2723)),
+          bodyMedium: TextStyle(color: Color(0xFF3E2723)),
+          titleLarge: TextStyle(color: Color(0xFF3E2723), fontWeight: FontWeight.bold),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFEFEBE0),
+          foregroundColor: Color(0xFF3E2723),
+          elevation: 0,
+          centerTitle: true,
+        ),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: kIsWeb
               ? {

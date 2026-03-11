@@ -168,24 +168,26 @@ class Live2DManager {
       try {
         this.app = new PIXI.Application({
           view: this.container,
-          transparent: true,
+          backgroundColor: 0xEFEBE0, // 더욱 깊이감 있는 모던 코지 오트밀
+          backgroundAlpha: 1,        // 배경을 불투명하게 설정
           width: this.container.offsetWidth || 800,
           height: this.container.offsetHeight || 600,
           autoStart: true,
           resolution: window.devicePixelRatio || 1,
-          antialias: false,
+          antialias: true,           // 부드러운 외곽선을 위해 활성화
           forceCanvas: true
         });
       } catch (error) {
         // Fallback for containerized environments
         this.app = new PIXI.Application({
           view: this.container,
-          transparent: true,
+          backgroundColor: 0xEFEBE0,
+          backgroundAlpha: 1,
           width: this.container.offsetWidth || 800,
           height: this.container.offsetHeight || 600,
           autoStart: true,
           resolution: 1,
-          antialias: false,
+          antialias: true,
           rendererType: 1  // Canvas renderer
         });
       }

@@ -77,3 +77,43 @@ class InfoTile extends StatelessWidget {
     );
   }
 }
+
+/// [신규] 마이페이지에서 사용하는 클릭 가능한 액션 타일 위젯 (아이콘 + 라벨 + 화살표)
+class ActionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const ActionTile({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.black54, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.black54,
+                fontSize: 14,
+              ),
+            ),
+            const Spacer(),
+            const Icon(Icons.chevron_right, color: Colors.black26, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}

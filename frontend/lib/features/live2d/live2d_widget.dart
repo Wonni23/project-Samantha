@@ -81,6 +81,7 @@ class Live2DWidgetState extends ConsumerState<Live2DWidget> {
       ..id = _viewId
       ..style.width = '100%'
       ..style.height = '100%'
+      ..style.backgroundColor = '#EFEBE0' // 더욱 깊이감 있는 모던 코지 오트밀
       ..appendChild(canvas);
 
     // Flutter에 HTML 요소 등록

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:frontend/common/widgets/header.dart';
-import 'package:frontend/common/widgets/footer.dart';
 import 'package:frontend/features/legal/ui/widgets/legal_page_helpers.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
@@ -158,7 +157,6 @@ class PrivacyPolicyPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const Footer(),
     );
   }
 }

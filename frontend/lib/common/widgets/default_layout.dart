@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/common/widgets/footer.dart';
 import 'package:frontend/common/widgets/header.dart';
 
 class DefaultLayout extends StatelessWidget {
@@ -16,14 +15,7 @@ class DefaultLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const Header(),
-      body: Column(
-        children: [
-          Expanded(
-            child: child,
-          ),
-          const Footer(),
-        ],
-      ),
+      body: child,
       bottomNavigationBar: bottomNavigationBar,
     );
   }

@@ -18,7 +18,7 @@ class UserContextView extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             children: [
               _buildSectionTitle('나의 페르소나 상태'),
-              _buildPersonaCard(userContext.personaState),
+              _buildPersonaCard(context, userContext.personaState),
               const SizedBox(height: 24),
               _buildSectionTitle('AI가 부르는 나의 호칭'),
               _buildTitleCard(userContext.userTitle),
@@ -65,7 +65,7 @@ class UserContextView extends ConsumerWidget {
     );
   }
 
-  Widget _buildPersonaCard(PersonaState persona) {
+  Widget _buildPersonaCard(BuildContext context, PersonaState persona) {
     return Card(
       color: Colors.black.withValues(alpha: 0.05),
       elevation: 0,
@@ -74,18 +74,18 @@ class UserContextView extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildAxisRow('장난스러움', persona.axisPlayful),
-            _buildAxisRow('거침없음', persona.axisFeisty),
-            _buildAxisRow('의존적임', persona.axisDependent),
-            _buildAxisRow('돌봄지향', persona.axisCaregive),
-            _buildAxisRow('성찰적임', persona.axisReflective),
+            _buildAxisRow(context, '장난스러움', persona.axisPlayful),
+            _buildAxisRow(context, '거침없음', persona.axisFeisty),
+            _buildAxisRow(context, '의존적임', persona.axisDependent),
+            _buildAxisRow(context, '돌봄지향', persona.axisCaregive),
+            _buildAxisRow(context, '성찰적임', persona.axisReflective),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAxisRow(String label, double value) {
+  Widget _buildAxisRow(BuildContext context, String label, double value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -100,8 +100,8 @@ class UserContextView extends ConsumerWidget {
               ),
               Text(
                 '${(value * 100).toInt()}%',
-                style: const TextStyle(
-                  color: Colors.purple,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -111,7 +111,7 @@ class UserContextView extends ConsumerWidget {
           LinearProgressIndicator(
             value: value,
             backgroundColor: Colors.black12,
-            valueColor: const AlwaysStoppedAnimation<Color>(Colors.purple),
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
             borderRadius: BorderRadius.circular(4),
           ),
         ],
