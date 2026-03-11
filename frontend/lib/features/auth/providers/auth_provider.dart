@@ -50,16 +50,15 @@ class Auth extends _$Auth {
       final statusCode = e.response?.statusCode;
       if (statusCode == 401 || statusCode == 403 || statusCode == 404) {
         logger.w('인증 실패(status: $statusCode). 로그아웃 처리합니다.');
-        await _clearSession();
-        return AuthStatus.loggedOut;
+      } else {
+        logger.e('서버 통신 중 에러 발생 (status: $statusCode). 초기 인증 실패로 간주합니다.');
       }
-      
-      // 네트워크 에러나 서버 5xx 에러 등은 세션을 유지하고 에러를 던져 AsyncValue.error 상태로 둠
-      logger.e('서버 통신 중 에러 발생 (status: $statusCode). 세션을 유지합니다.');
-      rethrow;
+      await _clearSession();
+      return AuthStatus.loggedOut;
     } catch (e) {
-      logger.e('알 수 없는 인증 에러 발생: ${e.runtimeType}. 세션을 유지합니다.');
-      rethrow;
+      logger.e('알 수 없는 인증 에러 발생: ${e.runtimeType}. 안전하게 로그아웃 처리합니다.');
+      await _clearSession();
+      return AuthStatus.loggedOut;
     }
   }
 

@@ -81,7 +81,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       // [수정] valueOrNull 대신 value 사용 (호환성 확보)
       final status = authState.value;
       if (status == null) {
-        return state.matchedLocation == AppRoutePaths.login ? null : AppRoutePaths.login;
+        // status가 null일 때 (에러 발생 혹은 데이터 없음) 더 확실하게 로그인 페이지로 유도
+        final location = state.matchedLocation;
+        if (location == AppRoutePaths.login || location == '/auth/callback' || location == '/splash') {
+          return null;
+        }
+        return AppRoutePaths.login;
       }
 
       final location = state.matchedLocation;
