@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:frontend/core/utils/logger.dart';
 import 'package:frontend/core/utils/platform_utils.dart';
@@ -36,6 +37,7 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
 
   /// 녹음을 시작합니다.
   Future<void> startRecording() async {
+    logger.i('🎙️ [AudioRecorder] startRecording called');
     // [보안] AI 응답 중이거나 재생 중일 때 녹음 방지
     final aiState = ref.read(aIResponseProvider);
     final player = ref.read(soundPlayerProvider);
@@ -53,20 +55,26 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
 
       state = const AudioRecorderState(isRecording: true);
 
-      // 웹에서 Blob 생성을 안정화하기 위해 가상 경로를 지정합니다.
-      const recordingPath = 'audio.webm';
+      // [수정] 플랫폼별 최적 코덱 선택
+      final codec = kIsWeb ? Codec.opusWebM : Codec.aacADTS;
+      final extension = kIsWeb ? 'webm' : 'aac';
+      final recordingPath = 'audio.$extension';
+
+      logger.i('🎙️ [AudioRecorder] Starting recorder with codec: $codec, path: $recordingPath');
+
       await _recorder!.startRecorder(
         toFile: recordingPath,
-        codec: Codec.opusWebM, // 웹 호환성을 위한 코덱
+        codec: codec,
       );
-    } catch (e) {
-      logger.e('!!! START RECORDER FAILED', error: e);
+    } catch (e, stack) {
+      logger.e('!!! START RECORDER FAILED: $e', error: e, stackTrace: stack);
       _resetRecording();
     }
   }
 
   /// 녹음을 중지하고 결과물 경로(URL)를 저장합니다.
   Future<void> stopRecording() async {
+    logger.i('🎙️ [AudioRecorder] stopRecording called');
     try {
       // `stopRecorder`는 파일 경로(모바일) 또는 Blob URL(웹)을 반환합니다.
       final path = await _recorder!.stopRecorder();
@@ -83,6 +91,7 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
 
   /// 녹음된 오디오를 재생합니다.
   Future<void> startPlaying() async {
+    logger.i('🎙️ [AudioRecorder] startPlaying called');
     final path = state.audioPath;
     if (path == null) return;
 
@@ -96,7 +105,7 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
 
       await player.startPlayer(
         fromURI: path,
-        codec: Codec.opusWebM,
+        codec: kIsWeb ? Codec.opusWebM : Codec.aacADTS,
         whenFinished: () {
           state = state.copyWith(isPlaying: false);
         },
@@ -109,6 +118,7 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
   }
 
   Future<void> stopPlaying() async {
+    logger.i('🎙️ [AudioRecorder] stopPlaying called');
     final player = ref.read(soundPlayerProvider);
     try {
       await player.stopPlayer();

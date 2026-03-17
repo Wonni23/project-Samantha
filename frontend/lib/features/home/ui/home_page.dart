@@ -255,7 +255,25 @@ class _HomePageState extends ConsumerState<HomePage>
                   child: ChatScreen(),
                 )
               else
-                const Positioned(bottom: 40, child: VoiceModeControls()),
+                Positioned(
+                  bottom: 60, // 위로 조금 더 올림
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withAlpha(80),
+                        ],
+                      ),
+                    ),
+                    child: const VoiceModeControls(),
+                  ),
+                ),
             ],
           ),
         ),
