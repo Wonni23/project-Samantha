@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 보안 정책 극단적 완화 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: file:; img-src * data: blob: file:; script-src * 'unsafe-inline' 'unsafe-eval' data: blob: file:; connect-src * data: blob: file:;">
+    <title>Live2D Mobile View</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #EFEBE0;
+        }
+        #live2d-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="live2d-container">
+        <canvas id="live2d-canvas"></canvas>
+    </div>
+
+    <!-- 
+        로컬 라이브러리 로드 
+    -->
+    <script src="libs/live2d.min.js"></script>
+    <script src="libs/live2dcubismcore.min.js"></script>
+    <script src="libs/pixi.min.js"></script>
+    <script src="libs/pixi-live2d-display.min.js"></script>
+    
+    <script src="live2d_init.js"></script>
+
+    <script>
+        window.addEventListener('load', function() {
+            console.log("🎭 [Mobile-WebView] index.html loaded");
+            if (window.PIXI) {
+                console.log("🎭 [Mobile-WebView] PIXI loaded successfully");
+            } else {
+                console.error("🎭 [Mobile-WebView] PIXI failed to load");
+            }
+        });
+    </script>
+</body>
+</html>

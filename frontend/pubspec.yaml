@@ -51,6 +51,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   socket_io_client: ^3.1.4
   logger: ^2.6.2
+  webview_flutter: ^4.10.0
   
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,11 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logos/
+    - assets/www/
+    - assets/www/libs/
+    - assets/www/live2d_model/
+    - assets/www/live2d_model/motion/
+    - assets/www/live2d_model/haru_greeter_t05.2048/
     - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
@@ -98,9 +104,9 @@ flutter:
   fonts:
   - family: Noto Sans KR
     fonts:
-      - asset: assets/fonts/noto_sans_kr_regular.woff2
+      - asset: assets/fonts/noto_sans_kr_regular.ttf
         weight: 400
-      - asset: assets/fonts/noto_sans_kr_bold.woff2
+      - asset: assets/fonts/noto_sans_kr_bold.ttf
         weight: 700
   # fonts:
   #   - family: Schyler

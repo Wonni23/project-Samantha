@@ -7,7 +7,9 @@ import 'package:frontend/features/auth/providers/auth_provider.dart';
 import 'package:frontend/features/chat/data/models/live2d_event.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:web/web.dart' as web;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/core/utils/platform_utils_stub.dart' as web if (dart.library.js_interop) 'package:web/web.dart';
 
 part 'socket_service.g.dart';
 
@@ -115,24 +117,18 @@ class SocketService {
 
     logger.i('Initializing socket connection...');
 
-    // 컨테이너 환경에서 현재 호스트 기반으로 소켓 URL 동적 생성
-    final currentHost = web.window.location.host;
-    final protocol = web.window.location.protocol == 'https:'
-        ? 'https'
-        : 'http';
+    String socketUrl;
 
-    // 호스트 검증: 개발 환경에서 예상 가능한 호스트 목록과 비교
-    final currentHostname = currentHost.split(':').first; // 포트 제거
-    const allowedHosts = <String>{'localhost', '127.0.0.1'};
-
-    if (!allowedHosts.contains(currentHostname)) {
-      logger.w(
-        '예상하지 못한 소켓 호스트가 감지되었습니다: $currentHost (hostname: $currentHostname). '
-        '환경 설정 또는 프록시 구성을 확인해주세요.',
-      );
+    if (kIsWeb) {
+      // 웹 환경: 현재 브라우저의 호스트를 기반으로 동적 생성
+      final currentHost = web.window.location.host;
+      final protocol = web.window.location.protocol == 'https:' ? 'https' : 'http';
+      socketUrl = '$protocol://$currentHost';
+    } else {
+      // 안드로이드 환경: .env 설정 또는 에뮬레이터 IP 사용
+      final envUrl = dotenv.env['BACKEND_URL'];
+      socketUrl = envUrl ?? 'http://10.0.2.2:8000';
     }
-
-    final socketUrl = '$protocol://$currentHost';
 
     logger.i('Socket URL: $socketUrl');
 

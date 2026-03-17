@@ -2,6 +2,7 @@ import 'dart:js_interop';
 import 'dart:typed_data';
 import 'package:web/web.dart' as web;
 
+/// 웹 전용 플랫폼 유틸리티 구현체
 class PlatformUtilsImpl {
   static Future<String> getPlayableUrl(Uint8List audioData) async {
     final blob = web.Blob(
