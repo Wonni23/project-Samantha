@@ -10,7 +10,7 @@ from app.services.auth_service import AuthService
 
 router = APIRouter()
 
-@router.post("/register/local", response_model=TokenResponse, summary="로컬 아이디(이메일) 회원가입")
+@router.post("/register/local", response_model=TokenResponse, summary="로컬 아이디(휴대폰 번호) 회원가입")
 async def register_local(
     request: LocalRegisterRequest,
     req: Request,
@@ -20,7 +20,7 @@ async def register_local(
     user_agent = req.headers.get("user-agent", "unknown")
     return await AuthService.register_local(db, request, client_ip, user_agent)
 
-@router.post("/login/local", response_model=TokenResponse, summary="로컬 아이디(이메일) 로그인")
+@router.post("/login/local", response_model=TokenResponse, summary="로컬 아이디(휴대폰 번호) 로그인")
 async def login_local(
     request: LocalLoginRequest,
     req: Request,

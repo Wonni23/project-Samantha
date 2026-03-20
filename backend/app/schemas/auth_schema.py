@@ -12,13 +12,15 @@ class LoginRequest(BaseModel):
 
 # 1-1. 로컬 로그인/가입 요청 DTO
 class LocalRegisterRequest(BaseModel):
-    email: str = Field(..., description="이메일")
+    phone_number: str = Field(..., description="휴대폰 번호 (숫자만 입력, 예: 01012345678)")
     password: str = Field(..., description="비밀번호")
 
     @model_validator(mode="after")
     def validate_fields(self):
-        if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email):
-            raise ValueError("유효하지 않은 이메일 형식입니다.")
+        # 숫자만 10~11자리 확인
+        if not re.match(r"^01[0-9]\d{7,8}$", self.phone_number):
+            raise ValueError("유효하지 않은 휴대폰 번호 형식입니다. (숫자 10~11자리)")
+            
         if len(self.password) < 8:
             raise ValueError("비밀번호는 8자 이상이어야 합니다.")
         if not re.search(r"[A-Z]", self.password):
@@ -30,13 +32,13 @@ class LocalRegisterRequest(BaseModel):
         return self
 
 class LocalLoginRequest(BaseModel):
-    email: str = Field(..., description="이메일")
+    phone_number: str = Field(..., description="휴대폰 번호")
     password: str = Field(..., description="비밀번호")
 
     @model_validator(mode="after")
-    def validate_email(self):
-        if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", self.email):
-            raise ValueError("유효하지 않은 이메일 형식입니다.")
+    def validate_phone(self):
+        if not re.match(r"^01[0-9]\d{7,8}$", self.phone_number):
+            raise ValueError("유효하지 않은 휴대폰 번호 형식입니다.")
         return self
 
 # 2. 토큰 응답 DTO

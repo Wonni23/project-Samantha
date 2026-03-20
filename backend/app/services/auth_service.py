@@ -95,17 +95,17 @@ class AuthService:
 
     @staticmethod
     async def register_local(db: AsyncSession, data: "LocalRegisterRequest", client_ip: str = "unknown", user_agent: str = "unknown") -> TokenResponse:
-        """이메일/비밀번호 로컬 회원가입"""
-        # 1. 이메일 중복 확인
-        stmt = select(User).where(User.email == data.email)
+        """휴대폰 번호/비밀번호 로컬 회원가입"""
+        # 1. 휴대폰 번호 중복 확인
+        stmt = select(User).where(User.phone_number == data.phone_number)
         result = await db.execute(stmt)
         if result.scalars().first():
-            raise exceptions.AuthError.EMAIL_ALREADY_EXISTS
+            raise exceptions.AuthError.PHONE_NUMBER_ALREADY_EXISTS
         
         # 2. 비밀번호 해싱 및 유저 생성
         hashed_password = security.get_password_hash(data.password)
         user = User(
-            email=data.email,
+            phone_number=data.phone_number,
             password_hash=hashed_password,
             role="user", 
             tier="free",
@@ -140,9 +140,9 @@ class AuthService:
 
     @staticmethod
     async def login_local(db: AsyncSession, data: "LocalLoginRequest", client_ip: str = "unknown", user_agent: str = "unknown") -> TokenResponse:
-        """이메일/비밀번호 로컬 로그인"""
+        """휴대폰 번호/비밀번호 로컬 로그인"""
         # 1. 유저 조회
-        stmt = select(User).where(User.email == data.email)
+        stmt = select(User).where(User.phone_number == data.phone_number)
         result = await db.execute(stmt)
         user = result.scalars().first()
 

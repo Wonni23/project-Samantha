@@ -40,7 +40,24 @@ services:
       - samantha-network
     restart: unless-stopped
 
-  # 3. PostgreSQL with pgvector extension (RAG 필수)
+  # 3. 리버스 프록시 (Nginx) - 백엔드와 짝꿍
+  nginx:
+    image: nginx:alpine
+    container_name: samantha_proxy
+    ports:
+      - "8443:443"  # 외부 8443 -> 컨테이너 443 (HTTPS)
+      - "80:80"     # 외부 80 -> 컨테이너 80 (HTTP redirect)
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/localhost.pem:/etc/nginx/certs/localhost.pem:ro
+      - ./frontend/localhost-key.pem:/etc/nginx/certs/localhost-key.pem:ro
+    depends_on:
+      - backend
+    networks:
+      - samantha-network
+    restart: unless-stopped
+
+  # 4. PostgreSQL with pgvector extension (RAG 필수)
   postgres:
     image: pgvector/pgvector:pg16
     container_name: samantha_postgres

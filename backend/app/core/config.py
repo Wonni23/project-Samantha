@@ -112,13 +112,8 @@ class Settings:
 
         # 비프로덕션 환경 기본값
         if self.ENVIRONMENT != "production":
-            # HTTPS 강제가 활성화된 경우 HTTPS URL만 허용
-            if self.FORCE_HTTPS:
-                return ["https://localhost:3000", "https://localhost:8080", "https://localhost:8443"]
-            else:
-                return ["http://localhost:3000", "http://localhost:8080", 
-                       "https://localhost:3000", "https://localhost:8080",
-                       "https://localhost:8443"]
+            # 개발 환경에서는 모바일 앱 등 모든 출처를 허용
+            return ["*"]
 
         # 프로덕션에서 설정이 없으면 안전을 위해 허용 안 함
         return []

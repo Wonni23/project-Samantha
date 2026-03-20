@@ -4,11 +4,12 @@ part 'local_auth.g.dart';
 
 @JsonSerializable()
 class LocalRegisterRequest {
-  final String email;
+  @JsonKey(name: 'phone_number')
+  final String phoneNumber;
   final String password;
 
   LocalRegisterRequest({
-    required this.email,
+    required this.phoneNumber,
     required this.password,
   });
 
@@ -19,11 +20,12 @@ class LocalRegisterRequest {
 
 @JsonSerializable()
 class LocalLoginRequest {
-  final String email;
+  @JsonKey(name: 'phone_number')
+  final String phoneNumber;
   final String password;
 
   LocalLoginRequest({
-    required this.email,
+    required this.phoneNumber,
     required this.password,
   });
 

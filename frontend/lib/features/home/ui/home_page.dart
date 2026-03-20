@@ -54,8 +54,8 @@ class _HomePageState extends ConsumerState<HomePage>
     // SocketService 초기화 (Future.microtask를 사용하여 빌드 완료 후 실행)
     Future.microtask(() async {
       if (!mounted) return;
-      // [일시 중단] 백엔드 없이 Live2D 확인을 위해 주석 처리
-      // await ref.read(socketServiceProvider).init();
+      // [복구] 백엔드 연동 활성화
+      await ref.read(socketServiceProvider).init();
       
       // [신규] 초기 로드 흐름 제어
       // 1. m2 (뒷짐 자세) 재생은 이제 live2d_init.js에서 모델 로드 즉시 수행함 (인덱스 0)

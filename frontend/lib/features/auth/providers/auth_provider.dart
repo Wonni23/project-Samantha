@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/core/utils/logger.dart';
@@ -34,8 +35,9 @@ class Auth extends _$Auth {
 
     try {
       // 2. [고도화] 서버에 실제 유저가 존재하는지 확인 (유령 유저 방지)
+      // 초기 부팅 시에는 네트워크 불안정 등을 고려하여 짧은 타임아웃(5초) 적용
       final authRepository = ref.read(authRepositoryProvider);
-      await authRepository.fetchMe();
+      await authRepository.fetchMe().timeout(const Duration(seconds: 5));
 
       // 3. 서버 검증 성공 시, 온보딩 여부에 따라 상태 결정
       final onboardingRequired =
@@ -45,6 +47,10 @@ class Auth extends _$Auth {
       }
 
       return AuthStatus.loggedIn;
+    } on TimeoutException {
+      logger.e('⏳ 서버 응답 시간 초과 (5s). 오프라인 상태 또는 네트워크 오류로 간주합니다.');
+      // [주의] 일단 로그아웃 상태로 보내 로그인 페이지로 유도
+      return AuthStatus.loggedOut;
     } on DioException catch (e) {
       // 4. 인증 관련 에러(401, 403, 404)인 경우에만 세션 정리 후 로그아웃
       final statusCode = e.response?.statusCode;
@@ -62,13 +68,13 @@ class Auth extends _$Auth {
     }
   }
 
-  /// 이메일 로그인을 수행합니다.
-  Future<void> signInWithEmail(String email, String password) async {
+  /// 휴대폰 번호 로그인을 수행합니다.
+  Future<void> signInWithPhone(String phoneNumber, String password) async {
     state = const AsyncValue.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
       final response = await repository.loginLocal(
-        LocalLoginRequest(email: email, password: password),
+        LocalLoginRequest(phoneNumber: phoneNumber, password: password),
       );
       
       await _handleLoginResponse(response);
@@ -76,18 +82,18 @@ class Auth extends _$Auth {
       final message = _extractErrorMessage(e, '로그인에 실패했습니다.');
       state = AsyncValue.error(message, stackTrace);
     } catch (error, stackTrace) {
-      logger.e('이메일 로그인 중 오류 발생: ${error.runtimeType}');
+      logger.e('휴대폰 번호 로그인 중 오류 발생: ${error.runtimeType}');
       state = AsyncValue.error('일시적인 오류가 발생했습니다.', stackTrace);
     }
   }
 
-  /// 이메일 회원가입을 수행합니다.
-  Future<void> signUpWithEmail(String email, String password) async {
+  /// 휴대폰 번호 회원가입을 수행합니다.
+  Future<void> signUpWithPhone(String phoneNumber, String password) async {
     state = const AsyncValue.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
       final response = await repository.registerLocal(
-        LocalRegisterRequest(email: email, password: password),
+        LocalRegisterRequest(phoneNumber: phoneNumber, password: password),
       );
       
       await _handleLoginResponse(response);
@@ -95,7 +101,7 @@ class Auth extends _$Auth {
       final message = _extractErrorMessage(e, '회원가입에 실패했습니다.');
       state = AsyncValue.error(message, stackTrace);
     } catch (error, stackTrace) {
-      logger.e('이메일 회원가입 중 오류 발생: ${error.runtimeType}');
+      logger.e('휴대폰 번호 회원가입 중 오류 발생: ${error.runtimeType}');
       state = AsyncValue.error('일시적인 오류가 발생했습니다.', stackTrace);
     }
   }
@@ -103,7 +109,7 @@ class Auth extends _$Auth {
   /// 에러 응답 바디에서 상세 메시지 추출 (타입 안전성 강화)
   String _extractErrorMessage(DioException e, String defaultMessage) {
     if (e.response?.statusCode == 401 && e.requestOptions.path.contains('/login')) {
-      return '이메일 또는 비밀번호가 일치하지 않습니다.';
+      return '휴대폰 번호 또는 비밀번호가 일치하지 않습니다.';
     }
 
     final dynamic data = e.response?.data;

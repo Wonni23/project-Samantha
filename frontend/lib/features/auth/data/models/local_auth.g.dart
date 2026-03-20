@@ -9,19 +9,25 @@ part of 'local_auth.dart';
 LocalRegisterRequest _$LocalRegisterRequestFromJson(
   Map<String, dynamic> json,
 ) => LocalRegisterRequest(
-  email: json['email'] as String,
+  phoneNumber: json['phone_number'] as String,
   password: json['password'] as String,
 );
 
 Map<String, dynamic> _$LocalRegisterRequestToJson(
   LocalRegisterRequest instance,
-) => <String, dynamic>{'email': instance.email, 'password': instance.password};
+) => <String, dynamic>{
+  'phone_number': instance.phoneNumber,
+  'password': instance.password,
+};
 
 LocalLoginRequest _$LocalLoginRequestFromJson(Map<String, dynamic> json) =>
     LocalLoginRequest(
-      email: json['email'] as String,
+      phoneNumber: json['phone_number'] as String,
       password: json['password'] as String,
     );
 
 Map<String, dynamic> _$LocalLoginRequestToJson(LocalLoginRequest instance) =>
-    <String, dynamic>{'email': instance.email, 'password': instance.password};
+    <String, dynamic>{
+      'phone_number': instance.phoneNumber,
+      'password': instance.password,
+    };

@@ -16,39 +16,59 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final _emailController = TextEditingController();
+  final _phone1Controller = TextEditingController(text: '010');
+  final _phone2Controller = TextEditingController();
+  final _phone3Controller = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  
+  final _phone2Focus = FocusNode();
+  final _phone3Focus = FocusNode();
+  final _passwordFocus = FocusNode();
+
   final _formKey = GlobalKey<FormState>();
   bool _showPasswordFields = false;
   bool _isSignUpMode = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _phone1Controller.dispose();
+    _phone2Controller.dispose();
+    _phone3Controller.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _phone2Focus.dispose();
+    _phone3Focus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
+
+  String get _fullPhoneNumber => 
+      '${_phone1Controller.text}${_phone2Controller.text}${_phone3Controller.text}';
 
   void _handleContinue() {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _showPasswordFields = true;
       });
+      // 비밀번호 필드로 포커스 이동
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _passwordFocus.requestFocus();
+      });
     }
   }
 
   void _handleLogin() {
     if (_formKey.currentState?.validate() ?? false) {
+      final phoneNumber = _fullPhoneNumber;
       if (_isSignUpMode) {
-        ref.read(authProvider.notifier).signUpWithEmail(
-              _emailController.text.trim(),
+        ref.read(authProvider.notifier).signUpWithPhone(
+              phoneNumber,
               _passwordController.text,
             );
       } else {
-        ref.read(authProvider.notifier).signInWithEmail(
-              _emailController.text.trim(),
+        ref.read(authProvider.notifier).signInWithPhone(
+              phoneNumber,
               _passwordController.text,
             );
       }
@@ -95,32 +115,101 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     children: [
                       const Spacer(),
                       
-                      // 이메일 입력 필드
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !isLoading,
-                        decoration: InputDecoration(
-                          hintText: '이메일 주소',
-                          prefixIcon: const Icon(Icons.email_outlined),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      // 핸드폰 번호 입력 영역
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 1. 통신사 번호 (010 등)
+                          Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              controller: _phone1Controller,
+                              keyboardType: TextInputType.phone,
+                              textAlign: TextAlign.center,
+                              enabled: !isLoading,
+                              maxLength: 3,
+                              decoration: InputDecoration(
+                                counterText: '',
+                                hintText: '010',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                if (value.length == 3) {
+                                  _phone2Focus.requestFocus();
+                                }
+                              },
+                              validator: (value) => (value == null || value.isEmpty) ? '' : null,
+                            ),
                           ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) return '이메일을 입력해주세요.';
-                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
-                            return '유효한 이메일 형식이 아닙니다.';
-                          }
-                          return null;
-                        },
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                            child: Text('-', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          ),
+                          // 2. 중간 번호
+                          Expanded(
+                            flex: 3,
+                            child: TextFormField(
+                              controller: _phone2Controller,
+                              focusNode: _phone2Focus,
+                              keyboardType: TextInputType.phone,
+                              textAlign: TextAlign.center,
+                              enabled: !isLoading,
+                              maxLength: 4,
+                              decoration: InputDecoration(
+                                counterText: '',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                if (value.length == 4) {
+                                  _phone3Focus.requestFocus();
+                                }
+                              },
+                              validator: (value) => (value == null || value.isEmpty) ? '' : null,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                            child: Text('-', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          ),
+                          // 3. 끝 번호
+                          Expanded(
+                            flex: 3,
+                            child: TextFormField(
+                              controller: _phone3Controller,
+                              focusNode: _phone3Focus,
+                              keyboardType: TextInputType.phone,
+                              textAlign: TextAlign.center,
+                              enabled: !isLoading,
+                              maxLength: 4,
+                              decoration: InputDecoration(
+                                counterText: '',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                if (value.length == 4 && !isFormVisible) {
+                                  _handleContinue();
+                                }
+                              },
+                              validator: (value) => (value == null || value.isEmpty) ? '' : null,
+                            ),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 8),
+                      const Text('핸드폰 번호를 입력해주세요', style: TextStyle(color: Colors.grey, fontSize: 12)),
                       
                       if (isFormVisible) ...[
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         // 비밀번호 입력 필드
                         TextFormField(
                           controller: _passwordController,
+                          focusNode: _passwordFocus,
                           obscureText: true,
                           enabled: !isLoading,
                           decoration: InputDecoration(
@@ -134,9 +223,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             if (value == null || value.isEmpty) return '비밀번호를 입력해주세요.';
                             if (_isSignUpMode) {
                               if (value.length < 8) return '비밀번호는 8자 이상이어야 합니다.';
-                              if (!RegExp(r'[A-Z]').hasMatch(value)) return '대문자를 포함해야 합니다.';
-                              if (!RegExp(r'[a-z]').hasMatch(value)) return '소문자를 포함해야 합니다.';
-                              if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) return '특수문자를 포함해야 합니다.';
                             }
                             return null;
                           },
@@ -191,7 +277,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             });
                           },
                           child: Text(
-                            _isSignUpMode ? '이미 계정이 있으신가요? 로그인' : '처음이신가요? 이메일로 가입하기',
+                            _isSignUpMode ? '이미 계정이 있으신가요? 로그인' : '처음이신가요? 핸드폰 번호로 가입하기',
                             style: TextStyle(
                               color: _isSignUpMode ? Colors.grey : Theme.of(context).colorScheme.primary,
                               fontWeight: _isSignUpMode ? null : FontWeight.bold,
@@ -208,7 +294,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('이메일로 계속하기'),
+                          child: const Text('핸드폰 번호로 계속하기'),
                         ),
                         const SizedBox(height: 8),
                         TextButton(
@@ -220,7 +306,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             });
                           },
                           child: Text(
-                            '처음이신가요? 이메일로 가입하기',
+                            '처음이신가요? 핸드폰 번호로 가입하기',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,

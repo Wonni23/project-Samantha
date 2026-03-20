@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/config/api_config.dart';
 import 'package:frontend/core/utils/logger.dart';
 import 'package:frontend/features/auth/providers/auth_provider.dart';
 import 'package:frontend/features/chat/data/models/live2d_event.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/core/utils/platform_utils_stub.dart' as web if (dart.library.js_interop) 'package:web/web.dart';
 
 part 'socket_service.g.dart';
@@ -125,19 +125,20 @@ class SocketService {
       final protocol = web.window.location.protocol == 'https:' ? 'https' : 'http';
       socketUrl = '$protocol://$currentHost';
     } else {
-      // 안드로이드 환경: .env 설정 또는 에뮬레이터 IP 사용
-      final envUrl = dotenv.env['BACKEND_URL'];
-      socketUrl = envUrl ?? 'http://10.0.2.2:8000';
+      // 안드로이드/iOS 환경: ApiConfig의 baseUrl 사용
+      // 만약 설정이 없으면 기본 에뮬레이터 IP(HTTPS) 사용
+      final baseUrl = ApiConfig.baseUrl;
+      socketUrl = baseUrl.isNotEmpty ? baseUrl : 'https://10.0.2.2:8443';
     }
 
     logger.i('Socket URL: $socketUrl');
 
     final options = io.OptionBuilder()
         .setTransports([
-          'polling',
           'websocket',
-        ]) // Socket.IO 기본 동작: polling으로 시작 후 가능한 경우 websocket으로 업그레이드
-        .setPath('/ws/socket.io') // 백엔드에 설정된 소켓 경로
+          'polling',
+        ]) // 웹소켓 직접 연결을 먼저 시도
+        .setPath('/ws/socket.io/') // 끝에 슬래시 추가하여 Nginx 프록시 호환성 확보
         .enableAutoConnect() // 자동 재연결 활성화
         .setReconnectionAttempts(5) // 최대 재연결 시도 횟수
         .setReconnectionDelay(2000) // 재연결 시도 간격 (2초)

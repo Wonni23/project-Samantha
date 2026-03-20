@@ -38,7 +38,7 @@ class AuthRepository {
     }
   }
 
-  /// 이메일 로그인을 수행합니다.
+  /// 휴대폰 번호 로그인을 수행합니다.
   Future<LoginResponse> loginLocal(LocalLoginRequest request) async {
     try {
       final response = await _dio.post(
@@ -47,12 +47,12 @@ class AuthRepository {
       );
       return LoginResponse.fromJson(response.data);
     } on DioException catch (e) {
-      logger.e('이메일 로그인 실패: ${e.type}');
+      logger.e('휴대폰 번호 로그인 실패: ${e.type}');
       rethrow;
     }
   }
 
-  /// 이메일 회원가입을 수행합니다.
+  /// 휴대폰 번호 회원가입을 수행합니다.
   Future<LoginResponse> registerLocal(LocalRegisterRequest request) async {
     try {
       final response = await _dio.post(
@@ -61,7 +61,7 @@ class AuthRepository {
       );
       return LoginResponse.fromJson(response.data);
     } on DioException catch (e) {
-      logger.e('이메일 회원가입 실패: ${e.type}');
+      logger.e('휴대폰 번호 회원가입 실패: ${e.type}');
       rethrow;
     }
   }

@@ -21,18 +21,25 @@ class LocalAssetServer {
           if (path == '/') path = '/index.html';
           
           // assets/www 폴더 내의 파일로 매핑
-          final assetPath = 'assets/www${path}';
+          final assetPath = 'assets/www$path';
           
           try {
             final data = await rootBundle.load(assetPath);
             final buffer = data.buffer.asUint8List();
 
             // MIME 타입 설정
-            if (path.endsWith('.html')) request.response.headers.contentType = ContentType.html;
-            else if (path.endsWith('.js')) request.response.headers.contentType = ContentType('application', 'javascript');
-            else if (path.endsWith('.json')) request.response.headers.contentType = ContentType.json;
-            else if (path.endsWith('.png')) request.response.headers.contentType = ContentType('image', 'png');
-            else if (path.endsWith('.css')) request.response.headers.contentType = ContentType('text', 'css');
+            if (path.endsWith('.html')) {
+              request.response.headers.contentType = ContentType.html;
+            } else if (path.endsWith('.js')) {
+              request.response.headers.contentType =
+                  ContentType('application', 'javascript');
+            } else if (path.endsWith('.json')) {
+              request.response.headers.contentType = ContentType.json;
+            } else if (path.endsWith('.png')) {
+              request.response.headers.contentType = ContentType('image', 'png');
+            } else if (path.endsWith('.css')) {
+              request.response.headers.contentType = ContentType('text', 'css');
+            }
 
             request.response.add(buffer);
           } catch (e) {

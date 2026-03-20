@@ -60,6 +60,7 @@ ${YELLOW}명령어:${NC}
   ${GREEN}clean${NC}      전체 중지 및 볼륨(DB, 스토리지) 삭제
   ${GREEN}backend${NC}    백엔드만 시작 (인프라 자동 시작)
   ${GREEN}backend-https${NC} 백엔드를 HTTPS로 시작
+  ${GREEN}proxy${NC}         백엔드 + Nginx 프록시 시작 (인프라 포함)
   ${GREEN}frontend${NC}   프론트엔드만 시작
   ${GREEN}infra${NC}      Docker 인프라만 시작 (PostgreSQL + MinIO)
   ${GREEN}migrate${NC}    Alembic 마이그레이션만 실행
@@ -640,6 +641,38 @@ show_logs() {
     docker compose logs -f "$service"
 }
 
+# 백엔드 + 프록시 시작
+start_proxy() {
+    log_info "백엔드 및 Nginx 프록시 시작 중..."
+    
+    # SSL 인증서 확인
+    check_ssl_certs
+    
+    # 필요한 서비스만 선택적으로 시작 (인프라 포함, redis 제외)
+    docker compose up -d postgres minio minio-init backend nginx
+    
+    log_info "서비스 헬스체크 중..."
+    local count=0
+    local max_wait=30
+    
+    while [ $count -lt $max_wait ]; do
+        # Nginx를 통한 백엔드 헬스체크 (포트 8000)
+        if curl -k -s https://localhost:8000/health &> /dev/null; then
+            echo ""
+            log_success "백엔드 및 프록시 시작 완료"
+            log_info "백엔드(Nginx 프록시): https://localhost:8000"
+            log_info "API 문서: https://localhost:8000/docs"
+            return 0
+        fi
+        echo -n "."
+        sleep 1
+        count=$((count + 1))
+    done
+    
+    echo ""
+    log_warning "헬스체크 시간 초과"
+}
+
 # 메인 로직
 case "${1:-}" in
     start)
@@ -661,6 +694,10 @@ case "${1:-}" in
     backend-https)
         check_prerequisites
         start_backend true
+        ;;
+    proxy)
+        check_prerequisites
+        start_proxy
         ;;
     frontend)
         check_prerequisites

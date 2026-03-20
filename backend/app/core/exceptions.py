@@ -50,10 +50,10 @@ class AuthError:
         detail="해당 사용자를 찾을 수 없습니다."
     )
 
-    # 400: 이미 존재하는 이메일
-    EMAIL_ALREADY_EXISTS = HTTPException(
+    # 400: 이미 존재하는 휴대폰 번호
+    PHONE_NUMBER_ALREADY_EXISTS = HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
-        detail="이미 존재하는 이메일입니다."
+        detail="이미 존재하는 휴대폰 번호입니다."
     )
 
     # 400: 잘못된 소셜 로그인 요청

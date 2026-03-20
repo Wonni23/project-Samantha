@@ -11,9 +11,8 @@ class ApiConfig {
 
   /// API Base URL
   static String get baseUrl {
-    final envUrl = dotenv.env['API_BASE_URL'] ?? '';
-    // 컨테이너 환경에서는 빈 문자열로 설정하여 상대 경로 사용 (Nginx 프록시 활용)
-    return envUrl.isEmpty ? '' : envUrl;
+    // .env에서 API_BASE_URL을 가져오며, 없으면 빈 문자열을 반환합니다.
+    return dotenv.env['API_BASE_URL'] ?? '';
   }
 
   /// OAuth Redirect URI

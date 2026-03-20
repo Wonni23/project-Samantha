@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/core/utils/logger.dart';
 import 'package:frontend/features/auth/providers/social_login_provider.dart';
 
 import 'package:frontend/features/auth/ui/pages/login_page.dart';
@@ -24,9 +25,16 @@ class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
   RouterNotifier(this._ref) {
+    // authProvider의 상태 변화를 구독합니다.
     _ref.listen<AsyncValue<AuthStatus>>(
       authProvider,
-      (previous, next) => notifyListeners(),
+      (previous, next) {
+        // 상태가 로딩 중이 아닐 때만 알림을 보내 불필요한 리다이렉션을 방지합니다.
+        if (!next.isLoading) {
+          logger.i('🔔 Auth status changed: ${next.value}. Notifying router...');
+          notifyListeners();
+        }
+      },
     );
     _ref.listen<bool>(
       testModeProvider,
@@ -60,9 +68,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       
       // authProvider가 아직 로딩 중이면 스플래시 화면으로 보냄
       if (authState.isLoading || authState.isRefreshing) {
-        // 로그인 페이지나 콜백 경로에 있을 때는 스플래시로 보내지 않음 (로그인/회원가입 진행 중인 경우)
+        // 로그인 페이지, OAuth 콜백, 온보딩 페이지에 있을 때는 스플래시로 보내지 않음
         final location = state.matchedLocation;
-        if (location == AppRoutePaths.login || location == '/auth/callback') {
+        if (location == AppRoutePaths.login || 
+            location == '/auth/callback' || 
+            location.startsWith('/onboarding')) {
           return null;
         }
         return '/splash';
@@ -100,14 +110,17 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       switch (status) {
         case AuthStatus.loggedOut:
-          // 로그아웃 상태에서는 로그인/콜백 페이지 외의 모든 접근을 로그인 페이지로 리디렉션
-          return isAuthRoute ? null : AppRoutePaths.login;
+          // 로그아웃 상태인데 로그인 관련 페이지가 아니거나, 스플래시 화면이면 로그인 페이지로 이동
+          if (location == '/splash' || !isAuthRoute) return AppRoutePaths.login;
+          return null;
         case AuthStatus.onboardingRequired:
-          // 온보딩 필요 상태에서는 온보딩 관련 경로가 아니면 프로필 설정 페이지로 리디렉션
-          return isOnboardingRoute ? null : AppRoutePaths.onboardingProfile;
+          // 온보딩이 필요한데 온보딩 페이지가 아니거나, 스플래시 화면이면 프로필 설정 페이지로 이동
+          if (location == '/splash' || !isOnboardingRoute) return AppRoutePaths.onboardingProfile;
+          return null;
         case AuthStatus.loggedIn:
-          // 로그인 완료 상태에서는 인증/온보딩 관련 페이지 접근 시 홈으로 리디렉션
-          return (isAuthRoute || isOnboardingRoute) ? AppRoutePaths.home : null;
+          // 로그인 완료 상태인데 인증/온보딩 페이지거나, 스플래시 화면이면 홈으로 이동
+          if (location == '/splash' || isAuthRoute || isOnboardingRoute) return AppRoutePaths.home;
+          return null;
       }
     },
     routes: [
