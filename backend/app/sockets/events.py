@@ -409,7 +409,9 @@ async def audio_blob(sid, data):
 
             async with async_session_factory() as db:
                 # STT + 파이프라인 준비를 병렬 실행
-                stt_task = asyncio.create_task(stt_service.transcribe(data))
+                # [수정] OpenAI Whisper가 aac 확장자를 지원하지 않으므로 m4a로 전달
+                stt_filename = "audio.m4a" if len(data) > 0 and data[0] == 0xFF else "audio.webm"
+                stt_task = asyncio.create_task(stt_service.transcribe(data, filename=stt_filename))
                 prep_task = asyncio.create_task(
                     _prepare_pipeline(user_id, ai_pipeline)
                 )

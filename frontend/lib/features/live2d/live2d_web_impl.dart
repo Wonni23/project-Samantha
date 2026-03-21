@@ -35,8 +35,10 @@ class Live2DControllerImpl implements Live2DController {
   final String _viewId;
   final String _canvasId;
   final String _modelPath;
+  @override
+  VoidCallback? onPlaybackFinished;
 
-  Live2DControllerImpl(this._viewId, this._canvasId, this._modelPath) {
+  Live2DControllerImpl(this._viewId, this._canvasId, this._modelPath, {this.onPlaybackFinished}) {
     _registerHtmlElement();
   }
 
@@ -75,6 +77,11 @@ class Live2DControllerImpl implements Live2DController {
 
   @override
   void playMotion(String group, int index) => web.window.live2dManager?.playMotion(group, index);
+
+  @override
+  void playAudio(String base64Audio) {
+    // 웹은 이미 브라우저 오디오를 사용하므로 추가 로직이 필요하지 않으나 인터페이스 준수를 위해 정의
+  }
 
   @override
   void setMouthOpen(double value) => web.window.live2dManager?.setMouthOpen(value);

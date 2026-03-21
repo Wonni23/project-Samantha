@@ -42,7 +42,7 @@ final class AIResponseNotifierProvider
 }
 
 String _$aIResponseNotifierHash() =>
-    r'9db358b338ccdc1d2817b2eebce5e9c14bf1818f';
+    r'49088dd894a84b8cf575f11ffc96ee3b2f616180';
 
 abstract class _$AIResponseNotifier extends $Notifier<AIResponseState> {
   AIResponseState build();

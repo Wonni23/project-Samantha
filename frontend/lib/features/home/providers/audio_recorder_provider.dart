@@ -40,9 +40,9 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
     logger.i('🎙️ [AudioRecorder] startRecording called');
     // [보안] AI 응답 중이거나 재생 중일 때 녹음 방지
     final aiState = ref.read(aIResponseProvider);
-    final player = ref.read(soundPlayerProvider);
+    final soundPlayer = ref.read(soundPlayerProvider.notifier);
     
-    if (aiState.isReceiving || aiState.isAudioPlaying || player.isPlaying) {
+    if (aiState.isReceiving || aiState.isAudioPlaying || soundPlayer.player.isPlaying) {
       logger.w('Cannot start recording while Samantha is responding or playing audio.');
       return;
     }
@@ -55,9 +55,9 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
 
       state = const AudioRecorderState(isRecording: true);
 
-      // [수정] 플랫폼별 최적 코덱 선택
-      final codec = kIsWeb ? Codec.opusWebM : Codec.aacADTS;
-      final extension = kIsWeb ? 'webm' : 'aac';
+      // [수정] OpenAI Whisper API 호환성을 위해 aacMP4 및 m4a 사용
+      final codec = kIsWeb ? Codec.opusWebM : Codec.aacMP4;
+      final extension = kIsWeb ? 'webm' : 'm4a';
       final recordingPath = 'audio.$extension';
 
       logger.i('🎙️ [AudioRecorder] Starting recorder with codec: $codec, path: $recordingPath');
@@ -95,15 +95,15 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
     final path = state.audioPath;
     if (path == null) return;
 
-    final player = ref.read(soundPlayerProvider);
+    final soundPlayer = ref.read(soundPlayerProvider.notifier);
 
     try {
       // 플레이어가 닫혀 있다면 다시 엽니다.
-      if (!player.isOpen()) {
-        await player.openPlayer();
+      if (!soundPlayer.player.isOpen()) {
+        await soundPlayer.player.openPlayer();
       }
 
-      await player.startPlayer(
+      await soundPlayer.player.startPlayer(
         fromURI: path,
         codec: kIsWeb ? Codec.opusWebM : Codec.aacADTS,
         whenFinished: () {
@@ -119,9 +119,9 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
 
   Future<void> stopPlaying() async {
     logger.i('🎙️ [AudioRecorder] stopPlaying called');
-    final player = ref.read(soundPlayerProvider);
+    final soundPlayer = ref.read(soundPlayerProvider.notifier);
     try {
-      await player.stopPlayer();
+      await soundPlayer.player.stopPlayer();
       state = state.copyWith(isPlaying: false);
     } catch (e) {
       logger.e('!!! STOP PLAYER FAILED', error: e);

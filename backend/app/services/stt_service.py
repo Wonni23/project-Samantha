@@ -105,7 +105,7 @@ class STTService:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
-    async def transcribe(self, audio_data: bytes, filename: str = "audio.webm") -> TranscriptionResult:
+    async def transcribe(self, audio_data: bytes, filename: str) -> TranscriptionResult:
         """
         오디오 바이너리 데이터를 받아 텍스트로 변환 + 할루시네이션 감지 (Whisper API)
 

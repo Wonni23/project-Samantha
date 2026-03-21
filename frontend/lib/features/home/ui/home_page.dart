@@ -147,16 +147,21 @@ class _HomePageState extends ConsumerState<HomePage>
 
   /// 1. 라이브2D 탭 (기존 홈 화면)
   Widget _buildLive2DTab() {
-    // AI 오디오 재생 상태 리스너
+    // [수정] 네이티브 오디오 분석 대신 WebView 직접 재생 및 립싱크 사용
+    // AI 응답 상태 리스너
     ref.listen<AIResponseState>(aIResponseProvider, (previous, next) {
-      if (previous?.isAudioPlaying == next.isAudioPlaying) {
-        return;
+      // 1. 오디오 재생 상태 변화 감지
+      if (previous?.isAudioPlaying != next.isAudioPlaying) {
+        if (next.isAudioPlaying) {
+          _onPlaybackStarted();
+        } else {
+          _onPlaybackStopped();
+        }
       }
 
-      if (next.isAudioPlaying) {
-        _onPlaybackStarted();
-      } else {
-        _onPlaybackStopped();
+      // 2. [모바일 핵심] Base64 오디오 데이터가 들어오면 WebView로 전달하여 재생
+      if (next.audioBase64 != null && previous?.audioBase64 != next.audioBase64) {
+        _live2dKey.currentState?.playAudio(next.audioBase64!);
       }
     });
 
@@ -194,6 +199,10 @@ class _HomePageState extends ConsumerState<HomePage>
                 modelPath: 'live2d_model/haru_greeter_t05.model3.json',
                 width: double.infinity,
                 height: double.infinity,
+                onPlaybackFinished: () {
+                  // [핵심] WebView 재생이 끝나면 즉시 Notifier에 알림
+                  ref.read(aIResponseProvider.notifier).notifyPlaybackFinished();
+                },
               ),
 
               // [신규] 현재 감정 상태 텍스트 표시 (좌측 상단)

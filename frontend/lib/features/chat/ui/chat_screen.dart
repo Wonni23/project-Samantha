@@ -55,9 +55,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _sendTextMessage() {
     if (_controller.text.trim().isEmpty) return;
     
-    // aIResponseProvider는 non-nullable AIResponseState를 반환함
+    // [수정] 전체 프로세스 진행 중이면 전송 방지
     final aiState = ref.read(aIResponseProvider);
-    if (aiState.isReceiving || aiState.isAudioPlaying) return;
+    if (aiState.isProcessing) return;
 
     // ChatNotifier 대신 AIResponseNotifier의 sendTextMessage 호출
     ref.read(aIResponseProvider.notifier).sendTextMessage(_controller.text);
@@ -88,8 +88,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // 4. 녹음 UI 상태 초기화
       audioNotifier.clearRecording();
     } else {
-      // 재생 중이거나 AI 응답 중이면 녹음 시작 불가
-      if (audioState.isPlaying || aiState.isReceiving || aiState.isAudioPlaying) { 
+      // [수정] 전체 프로세스 진행 중이면 녹음 시작 불가
+      if (audioState.isPlaying || aiState.isProcessing) { 
         return;
       }
 
@@ -107,8 +107,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     // aIResponseProvider는 non-nullable AIResponseState를 반환함
     final aiState = ref.watch(aIResponseProvider); 
 
-    // AI 응답 중이거나 재생 중일 때 버튼 비활성화 여부
-    final bool isBusy = aiState.isReceiving || aiState.isAudioPlaying || audioState.isPlaying; 
+    // [수정] AI 응답 전체 프로세스(isProcessing) 완료 전까지는 busy 상태 유지
+    final bool isBusy = aiState.isProcessing || audioState.isPlaying; 
 
     // 메시지가 추가될 때마다 하단 스크롤 실행
     ref.listen(chatProvider, (previous, next) {
@@ -118,13 +118,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     // AI 응답 상태 변화 감지 및 포커스 재설정
-    ref.listen(aIResponseProvider, (previousAiState, newAiState) { 
-      // newAiState는 non-nullable임을 활용하여 로직 단순화
-      final wasBusy = (previousAiState?.isReceiving ?? false) || (previousAiState?.isAudioPlaying ?? false);
-      final isNowIdle = !newAiState.isReceiving && !newAiState.isAudioPlaying;
+    ref.listen(aIResponseProvider, (previousAiState, newAiState) {
+      // [수정] 개별 청크가 아닌 전체 프로세스(isProcessing)가 끝났을 때만 포커스 요청
+      final wasProcessing = previousAiState?.isProcessing ?? false;
+      final isNowFinished = !newAiState.isProcessing;
 
-      if (wasBusy && isNowIdle) {
-        // AI 활동이 끝난 후 텍스트 필드에 포커스 재설정
+      if (wasProcessing && isNowFinished) {
+        // AI 활동이 완전히 끝난 후 텍스트 필드에 포커스 재설정
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted && _focusNode.canRequestFocus) {
             _focusNode.requestFocus();
@@ -132,7 +132,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         });
       }
     });
-
 
     return Padding(
       padding: const EdgeInsets.all(20.0),

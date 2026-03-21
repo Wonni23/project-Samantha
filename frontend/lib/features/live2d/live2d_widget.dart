@@ -8,12 +8,14 @@ class Live2DWidget extends ConsumerStatefulWidget {
   final String modelPath;
   final double? width;
   final double? height;
+  final VoidCallback? onPlaybackFinished; // [신규] 재생 완료 콜백
 
   const Live2DWidget({
     super.key,
     required this.modelPath,
     this.width,
     this.height,
+    this.onPlaybackFinished,
   });
 
   @override
@@ -30,11 +32,14 @@ class Live2DWidgetState extends ConsumerState<Live2DWidget> {
     final canvasId = 'live2d-canvas';
 
     // 이제 플랫폼별 구현체가 팩토리 메서드에 의해 안전하게 생성됩니다.
-    _controller = Live2DController(viewId, canvasId, widget.modelPath);
+    _controller = Live2DController(viewId, canvasId, widget.modelPath, onPlaybackFinished: widget.onPlaybackFinished);
   }
 
   /// 모션 재생
   void playMotion(String group, [int index = 0]) => _controller.playMotion(group, index);
+
+  /// [신규] 오디오 재생 (WebView 내부 재생을 통한 립싱크 완벽 동기화)
+  void playAudio(String base64Audio) => _controller.playAudio(base64Audio);
 
   /// 입 모양 조절 (0.0 ~ 1.0)
   void setMouthOpen(double value) => _controller.setMouthOpen(value);

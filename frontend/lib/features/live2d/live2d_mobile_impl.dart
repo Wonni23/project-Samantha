@@ -7,11 +7,23 @@ import 'live2d_controller.dart';
 class Live2DControllerImpl implements Live2DController {
   late final WebViewController _webController;
   final String _modelPath;
+  @override
+  VoidCallback? onPlaybackFinished;
 
-  Live2DControllerImpl(String viewId, String canvasId, this._modelPath) {
+  Live2DControllerImpl(String viewId, String canvasId, this._modelPath, {this.onPlaybackFinished}) {
     _webController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xFFEFEBE0))
+      // [신규] JS -> Flutter 통신 채널 추가 (재생 완료 감지용)
+      ..addJavaScriptChannel(
+        'Live2DChannel',
+        onMessageReceived: (message) {
+          if (message.message == 'playbackFinished') {
+            logger.i('🎭 [Mobile-WebView] Playback finished signal received');
+            onPlaybackFinished?.call();
+          }
+        },
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
@@ -52,6 +64,11 @@ class Live2DControllerImpl implements Live2DController {
   @override
   void playMotion(String group, int index) {
     _webController.runJavaScript('window.live2dManager.playMotion(\'$group\', $index)');
+  }
+
+  @override
+  void playAudio(String base64Audio) {
+    _webController.runJavaScript('window.live2dManager.playAudio(\'$base64Audio\')');
   }
 
   @override

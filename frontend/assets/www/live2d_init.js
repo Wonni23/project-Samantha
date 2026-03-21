@@ -143,6 +143,54 @@ class Live2DManager {
     return null;
   }
 
+  /**
+   * [신규] 외부(Flutter)에서 전달된 Base64 오디오 데이터를 재생합니다.
+   * 재생 시 AnalyserNode 인터셉터가 자동으로 동작하여 립싱크가 발생합니다.
+   */
+  async playAudio(base64Data) {
+    try {
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      // Base64를 ArrayBuffer로 변환
+      const binaryString = atob(base64Data);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      // 오디오 데이터 디코딩
+      const audioBuffer = await this.audioContext.decodeAudioData(bytes.buffer);
+      
+      // 소스 생성 및 연결
+      const source = this.audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      
+      // [중요] 인터셉터가 AudioNode.prototype.connect를 가로채고 있으므로 
+      // destination에 연결하면 자동으로 립싱크 분석기가 중간에 삽입됩니다.
+      source.connect(this.audioContext.destination);
+      
+      source.start(0);
+      console.log('[Live2D] PlayAudio started via WebView AudioContext');
+
+      source.onended = () => {
+        console.log('[Live2D] PlayAudio finished');
+        // [모바일] Flutter로 재생 완료 신호 전송
+        if (window.Live2DChannel) {
+          window.Live2DChannel.postMessage('playbackFinished');
+        }
+      };
+    } catch (e) {
+      console.error('[Live2D] playAudio failed:', e);
+    }
+  }
+
   // Live2D 초기화
   async initialize(containerId, modelPath) {
     try {

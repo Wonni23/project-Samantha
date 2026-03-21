@@ -9,11 +9,14 @@ import 'live2d_controller_stub.dart'
 /// Live2D 캐릭터를 제어하기 위한 공통 인터페이스입니다.
 abstract class Live2DController {
   /// 플랫폼별 적절한 구현체를 생성하는 팩토리 메서드
-  factory Live2DController(String viewId, String canvasId, String modelPath) {
-    return Live2DControllerImpl(viewId, canvasId, modelPath);
+  factory Live2DController(String viewId, String canvasId, String modelPath, {VoidCallback? onPlaybackFinished}) {
+    return Live2DControllerImpl(viewId, canvasId, modelPath, onPlaybackFinished: onPlaybackFinished);
   }
 
+  VoidCallback? onPlaybackFinished;
+
   void playMotion(String group, int index);
+  void playAudio(String base64Audio);
   void setMouthOpen(double value);
   void setParameterValue(String id, double value);
   void startLipSync();
