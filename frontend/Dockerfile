@@ -1,26 +1,13 @@
-# ./frontend/nginx.conf
+# 스테이지 구분 없이 오직 서빙만 담당하는 경량 Nginx
+FROM nginx:alpine
 
-server {
-    listen 80;
-    server_name _; # 어떤 요청이든 묻지도 따지지도 않고 처리 (대문에서 이미 필터링 됨)
+# 로컬에서 빌드된 결과물을 컨테이너 내부로 복사
+# (Dockerfile과 같은 위치에 build/web 폴더가 있어야 함)
+COPY /web /usr/share/nginx/html
 
-    root /usr/share/nginx/html;
-    index index.html;
+# 이전에 작성한 Nginx 설정 파일 복사
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-    # 백엔드 관련 proxy_pass 전부 삭제! (호스트 Nginx가 대신 해줌)
+EXPOSE 80 443
 
-    # Flutter SPA 라우팅
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # 정적 파일 캐싱 최적화
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-}
+CMD ["nginx", "-g", "daemon off;"]

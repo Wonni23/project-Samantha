@@ -23,8 +23,11 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - postgres:
+      postgres:
         condition: service_healthy
+    networks:
+      - samantha-network
+
 
   # 3. PostgreSQL with pgvector extension (RAG 필수)
   postgres:
