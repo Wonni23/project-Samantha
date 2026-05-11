@@ -22,6 +22,9 @@ services:
       - ./backend/certs:/app/certs
     env_file:
       - ./backend/.env
+    depends_on:
+      - postgres:
+        condition: service_healthy
 
   # 3. PostgreSQL with pgvector extension (RAG 필수)
   postgres:
