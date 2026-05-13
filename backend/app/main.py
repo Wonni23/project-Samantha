@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     logger.info("✅ 필수 환경 변수 확인 완료")
 
     # 서버 기동 시 DB 초기화
-    logger.info("🚀 사만다의 심장을 깨우는 중...")
+    logger.info("🚀 사만다를 깨우는 중...")
     await init_db()
     logger.info("✅ 모든 데이터베이스 테이블이 준비되었습니다.")
 
@@ -151,7 +151,7 @@ async def root():
         "service": "Samantha Project API",
         "version": "0.1.0",
         "status": "alive",
-        "message": "사만다가 대기 중입니다, 폐하.",
+        "message": "사만다가 대기 중입니다",
         "endpoints": {
             "health": "/health",
             "api": "/api/v1",
@@ -161,7 +161,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "alive", "message": "사만다가 대기 중입니다, 폐하."}
+    return {"status": "alive", "message": "사만다가 대기 중입니다"}
 
 
 @app.post("/test-user")
@@ -187,7 +187,7 @@ async def create_test_user():
             session.add(new_user)
             await session.commit()
             await session.refresh(new_user)
-            return {"message": "축하드립니다 폐하, 첫 유저 생성 성공!", "user": new_user}
+            return {"message": "축하드립니다, 첫 유저 생성 성공!", "user": new_user}
         except Exception as e:
             await session.rollback()
             logger.error("[test-user] 생성 실패: %s", e)
