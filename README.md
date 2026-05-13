@@ -2,7 +2,7 @@
 **`https://sia.software`**
 - 테스트 계정 : test@test.com / Test1234!
 
-![데모](./docs/serviceimg.png)
+![데모](./demodocs/serviceimg.png)
 
 ## 1. 개요 (Introduction)
 - **개발 기간:** 2026.01.01 ~ 2026.02.28 (약 2개월)
@@ -53,7 +53,7 @@ sequenceDiagram
     participant API as ⚙️ FastAPI
     participant Analyst as 🕵️ Analyst (LLM)
     participant RAG as 🗃️ pgvector DB
-    participant Actor as 🎭 Actor (LLM)
+    participant LLMActor as 🎭 Actor (LLM)
     participant TTS as 🔊 TTS
 
     User->>API: 1. 음성 발화 (STT) 또는 텍스트 입력
@@ -61,8 +61,8 @@ sequenceDiagram
     Analyst-->>API: 3. 감정 태그 및 추출된 핵심어 반환
     API->>RAG: 4. 키워드 기반 연관 기억(Life Legacy) 검색
     RAG-->>API: 5. 과거 컨텍스트 반환
-    API->>Actor: 6. 과거 기억 + 5축 페르소나 주입 후 응답 생성
-    Actor-->>API: 7. LLM 텍스트 스트리밍
+    API->>LLMActor: 6. 과거 기억 + 5축 페르소나 주입 후 응답 생성
+    LLMActor-->>API: 7. LLM 텍스트 스트리밍
     par 실시간 스트리밍 처리
         API-->>User: 8a. 텍스트 스트리밍 (WebSocket)
         API->>TTS: 8b. 음성 합성 요청
@@ -91,7 +91,7 @@ sequenceDiagram
 - **문제 상황:** 초기 `Analyst`와 `Actor`를 분리한 2-LLM 아키텍처는 응답 지연(Latency)과 비용이 이중으로 발생하는 병목이 존재.
 - **해결 방안:** 1-LLM 구조로의 전환 타당성을 검증하기 위해, **6개 시나리오 기반 총 240회에 걸친 정량적 A/B 테스트(품질 벤치마크)**를 자체 설계 및 수행.
 - **결과:** 1-LLM 아키텍처가 2-LLM 대비 **응답 품질(페르소나 일관성, 기억 활용도)을 유지하면서도 Latency를 44% 단축**함을 데이터로 입증. 이를 근거로 아키텍처를 최적화하여 성능과 비용 효율성을 극대화함.
-- 📊 **[벤치마크 실험 결과 및 품질 리포트 보기](./docs/bench_quality_unified.html)**
+- 📊 **[벤치마크 실험 결과 및 품질 리포트 보기](./demodocs/bench_quality_unified.html)**
 
 ---
 
