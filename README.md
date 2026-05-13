@@ -91,6 +91,6 @@ sequenceDiagram
 - **문제 상황:** 초기 `Analyst`와 `Actor`를 분리한 2-LLM 아키텍처는 응답 지연(Latency)과 비용이 이중으로 발생하는 병목이 존재.
 - **해결 방안:** 1-LLM 구조로의 전환 타당성을 검증하기 위해, **6개 시나리오 기반 총 240회에 걸친 정량적 A/B 테스트(품질 벤치마크)**를 자체 설계 및 수행.
 - **결과:** 1-LLM 아키텍처가 2-LLM 대비 **응답 품질(페르소나 일관성, 기억 활용도)을 유지하면서도 Latency를 44% 단축**함을 데이터로 입증. 이를 근거로 아키텍처를 최적화하여 성능과 비용 효율성을 극대화함.
-- 📊 **[벤치마크 실험 결과 및 품질 리포트 보기](https://htmlpreview.github.io/?https://github.com/Wonni23/Sia/blob/main/demodocs/bench_quality_unified.html)**
+- 📊 **[벤치마크 실험 결과 및 품질 리포트 보기](https://htmlpreview.github.io/?https://github.com/Wonni23/project-Samantha/blob/main/demodocs/bench_quality_unified.html)**
 
 ---
