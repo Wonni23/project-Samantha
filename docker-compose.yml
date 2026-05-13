@@ -5,8 +5,6 @@ services:
     container_name: samantha_frontend
     ports:
       - "127.0.0.1:8080:80" # 외부 노출을 막고 호스트 내부 8080 포트와 연결
-    volumes:
-      - ./demodocs:/usr/share/nginx/html/demodocs:ro
     depends_on:
       - backend
     networks:
