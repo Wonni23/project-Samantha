@@ -1,5 +1,5 @@
 # Samantha (Sia) - Live2D와 장기 기억(RAG)을 결합한 지능형 AI 인터랙션 플랫폼
-**`https://sia.software`**
+🔗 **웹 서비스 접속:** [https://sia.software](https://sia.software)
 - 테스트 계정 : test@test.com / Test1234!
 
 ![데모](./demodocs/serviceimg.png)
